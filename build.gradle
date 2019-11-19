@@ -17,6 +17,11 @@ dependencies {
     compile "org.glassfish.jersey.inject:jersey-hk2:${jersey_version}"
     compile "org.glassfish.jersey.media:jersey-media-moxy:${jersey_version}"
 
+    compile "io.swagger.core.v3:swagger-jaxrs2:2.0.10"
+    compile "io.swagger.core.v3:swagger-jaxrs2-servlet-initializer:2.0.10"
+    compile "io.swagger:swagger-jaxrs:1.5.24"
+    compile "org.glassfish.jersey.containers:jersey-container-grizzly2-servlet:2.0-m07-1"
+
     runtime "com.sun.xml.bind:jaxb-core:2.3.0"
     runtime "com.sun.xml.bind:jaxb-impl:2.3.0"
     runtime "javax.xml.bind:jaxb-api:2.3.0"

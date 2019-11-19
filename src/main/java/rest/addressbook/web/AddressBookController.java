@@ -15,6 +15,12 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import rest.addressbook.domain.AddressBook;
 import rest.addressbook.domain.Person;
 
@@ -22,6 +28,7 @@ import rest.addressbook.domain.Person;
  * A service that manipulates contacts in an address book.
  */
 @Path("/contacts")
+@Tag(name = "AddressBook REST API")
 public class AddressBookController {
 
   /**
@@ -37,6 +44,16 @@ public class AddressBookController {
    */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
+  @ApiResponse(
+    responseCode = "200",
+        content = @Content(
+            mediaType = "application/json",
+            array = @ArraySchema(
+                schema = @Schema(implementation = AddressBook.class)
+            )
+        ),
+        description = "Returns the address book."
+  )
   public AddressBook getAddressBook() {
     return addressBook;
   }
@@ -51,6 +68,16 @@ public class AddressBookController {
    */
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
+  @ApiResponse(
+    responseCode = "201",
+        content = @Content(
+            mediaType = "application/json",
+            array = @ArraySchema(
+                schema = @Schema(implementation = Person.class)
+            )
+        ),
+        description = "Add a new person to the address book"
+  )
   public Response addPerson(@Context UriInfo info, Person person) {
     addressBook.getPersonList().add(person);
     person.setId(addressBook.nextId());
