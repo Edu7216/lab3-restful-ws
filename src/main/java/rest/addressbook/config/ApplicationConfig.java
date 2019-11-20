@@ -36,12 +36,12 @@ public class ApplicationConfig extends ResourceConfig {
     register(AddressBookController.class);
     register(MOXyJsonProvider.class);
     register(new AbstractBinder() {
-
       @Override
       protected void configure() {
         bind(addressBook).to(AddressBook.class);
       }
     });
+
     OpenAPI oas = new OpenAPI();
     Info info = new Info()
           .title("Address book API")
@@ -49,16 +49,12 @@ public class ApplicationConfig extends ResourceConfig {
           .termsOfService("https://github.com/UNIZAR-30246-WebEngineering/lab3-restful-ws/blob/master/README.md")
           .contact(new Contact()
                 .email("721615@unizar.es"));
-
     oas.info(info);
-
     OpenApiResource openApiResource = new OpenApiResource();
-
     SwaggerConfiguration oasConfig = new SwaggerConfiguration()
             .openAPI(oas)
             .prettyPrint(true)
             .resourcePackages(Stream.of("io.swagger.sample.resource").collect(Collectors.toSet()));
-
     openApiResource.setOpenApiConfiguration(oasConfig);
     register(openApiResource);
   }

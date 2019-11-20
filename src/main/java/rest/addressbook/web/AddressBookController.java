@@ -15,7 +15,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
-import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -44,16 +45,12 @@ public class AddressBookController {
    */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  @ApiResponse(
-    responseCode = "200",
-        content = @Content(
-            mediaType = "application/json",
-            array = @ArraySchema(
-                schema = @Schema(implementation = AddressBook.class)
-            )
-        ),
-        description = "Returns the address book."
-  )
+  @Operation(summary = "Get the address book",
+    responses = {
+          @ApiResponse(description = "Address book obtained",
+                  responseCode = "200",
+                  content = @Content(mediaType = "application/json",
+                          schema = @Schema(implementation = AddressBook.class)))})
   public AddressBook getAddressBook() {
     return addressBook;
   }
@@ -68,17 +65,14 @@ public class AddressBookController {
    */
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
-  @ApiResponse(
-    responseCode = "201",
-        content = @Content(
-            mediaType = "application/json",
-            array = @ArraySchema(
-                schema = @Schema(implementation = Person.class)
-            )
-        ),
-        description = "Add a new person to the address book"
-  )
-  public Response addPerson(@Context UriInfo info, Person person) {
+  @Operation(summary = "Add a new person to the address book",
+    responses = {
+          @ApiResponse(description = "Person addedd",
+                  responseCode = "201",
+                  content = @Content(mediaType = "application/json",
+                          schema = @Schema(implementation = Person.class)))})
+  public Response addPerson(@Parameter(description = "URI information of the request", required = true) @Context UriInfo info, 
+                            @Parameter(description = "Posted entity", required = true) Person person) {
     addressBook.getPersonList().add(person);
     person.setId(addressBook.nextId());
     person.setHref(info.getAbsolutePathBuilder().path("person/{id}").build(person.getId()));
@@ -94,7 +88,14 @@ public class AddressBookController {
   @GET
   @Path("/person/{id}")
   @Produces(MediaType.APPLICATION_JSON)
-  public Response getPerson(@PathParam("id") int id) {
+  @Operation(summary = "Get a person by its id",
+    responses = {
+          @ApiResponse(description = "Person obtained",
+                  responseCode = "200",
+                  content = @Content(mediaType = "application/json",
+                          schema = @Schema(implementation = Person.class))),
+          @ApiResponse(responseCode = "404", description = "Person not found")})
+  public Response getPerson(@Parameter(description = "Unique identifier of a person", required = true) @PathParam("id") int id) {
     for (Person p : addressBook.getPersonList()) {
       if (p.getId() == id) {
         return Response.ok(p).build();
@@ -114,8 +115,16 @@ public class AddressBookController {
   @PUT
   @Path("/person/{id}")
   @Produces(MediaType.APPLICATION_JSON)
-  public Response updatePerson(@Context UriInfo info,
-                               @PathParam("id") int id, Person person) {
+  @Operation(summary = "Update a person by its id",
+    responses = {
+          @ApiResponse(description = "Person updated",
+                  responseCode = "200",
+                  content = @Content(mediaType = "application/json",
+                          schema = @Schema(implementation = Person.class))),
+          @ApiResponse(responseCode = "400", description = "id is not a key")})
+  public Response updatePerson(@Parameter(description = "URI information of the request", required = true) @Context UriInfo info,
+                               @Parameter(description = "Unique identifier of a person", required = true) @PathParam("id") int id, 
+                               @Parameter(description = "Posted entity", required = true) Person person) {
     for (int i = 0; i < addressBook.getPersonList().size(); i++) {
       if (addressBook.getPersonList().get(i).getId() == id) {
         person.setId(id);
@@ -136,7 +145,12 @@ public class AddressBookController {
   @DELETE
   @Path("/person/{id}")
   @Produces(MediaType.APPLICATION_JSON)
-  public Response updatePerson(@PathParam("id") int id) {
+  @Operation(summary = "Delete a person by its id",
+    responses = {
+          @ApiResponse(description = "Person deleted",
+                  responseCode = "204"),
+          @ApiResponse(responseCode = "404", description = "id is not a key")})
+  public Response updatePerson(@Parameter(description = "Unique identifier of a person", required = true) @PathParam("id") int id) {
     for (int i = 0; i < addressBook.getPersonList().size(); i++) {
       if (addressBook.getPersonList().get(i).getId() == id) {
         addressBook.getPersonList().remove(i);
